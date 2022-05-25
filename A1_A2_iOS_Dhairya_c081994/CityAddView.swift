@@ -21,7 +21,7 @@ class CityAddView: UIViewController {
     
     var MpVIew : MKMapView?
     
-    var matchingItems:[MKMapItem] = []
+    var Mitm:[MKMapItem] = []
     
     var delegate : SearchCityResult?
     
@@ -30,7 +30,7 @@ class CityAddView: UIViewController {
 
     }
     
-    @IBAction func btnSearchTap(_ sender: Any) {
+    @IBAction func findBtn(_ sender: Any) {
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = txtSearch.text!
         request.region = MpVIew!.region
@@ -39,31 +39,30 @@ class CityAddView: UIViewController {
             guard let response = response else {
                 return
             }
-            self.matchingItems.removeAll()
-            self.matchingItems = response.mapItems
+            self.Mitm.removeAll()
+            self.Mitm = response.mapItems
             self.tblView.reloadData()
         }
 
     }
-    @IBAction func barBackTap(_ sender: Any) {
+    @IBAction func cnclbtn(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
     
 }
 extension CityAddView : UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return matchingItems.count
+        return Mitm.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CellRslt") as!
-        CellRslt
-        cell.lblTitle.text = matchingItems[indexPath.row].placemark.title ?? ""
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ResultCellView") as! ResultCellView
+        cell.lblTitle.text = Mitm[indexPath.row].placemark.title ?? ""
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.searchedCity(item: matchingItems[indexPath.row])
+        delegate?.searchedCity(item: Mitm[indexPath.row])
         self.navigationController?.popViewController(animated: true)
     }
     

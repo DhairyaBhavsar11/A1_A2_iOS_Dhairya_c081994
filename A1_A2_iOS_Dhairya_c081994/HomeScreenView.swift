@@ -13,14 +13,14 @@ class HomeScreenView: UIViewController  {
     
     
     @IBOutlet var MPView: MKMapView!
-    @IBOutlet weak var lblDistance: UILabel!
+    @IBOutlet weak var kmtxt: UILabel!
     @IBOutlet weak var NaviBar: UINavigationBar!
     
     
-    var locationManager: CLLocationManager!
+    var LocationHandler: CLLocationManager!
     
     var CTY : [MKMapItem] = []
-    var polygon: MKPolygon? = nil
+    var Circle: MKPolygon? = nil
                                     
     let item = UINavigationItem()
     
@@ -29,13 +29,13 @@ class HomeScreenView: UIViewController  {
         MPView.delegate = self
         if (CLLocationManager.locationServicesEnabled())
         {
-            locationManager = CLLocationManager()
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyBest
-            locationManager.requestAlwaysAuthorization()
-            locationManager.startUpdatingLocation()
+            LocationHandler = CLLocationManager()
+            LocationHandler.delegate = self
+            LocationHandler.desiredAccuracy = kCLLocationAccuracyBest
+            LocationHandler.requestAlwaysAuthorization()
+            LocationHandler.startUpdatingLocation()
         }
-        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressed))
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(Taplong))
         self.MPView.addGestureRecognizer(longPressRecognizer)
         
         
@@ -59,27 +59,27 @@ class HomeScreenView: UIViewController  {
     @objc func addPhotosTapped() {
         if MPView.overlays.last != nil {
             self.MPView.removeOverlay(MPView.overlays.last!)
-            polygon = nil
+            Circle = nil
         }
         for i in 0..<CTY.count {
             if i == 0 {
-                showRoute(source: locationManager.location!.coordinate, destination: CTY[i].placemark.coordinate, title: "A")
+                direction(source: LocationHandler.location!.coordinate, destination: CTY[i].placemark.coordinate, title: "A")
             } else if i == 1 {
-                showRoute(source: CTY[i-1].placemark.coordinate, destination: CTY[i].placemark.coordinate, title: "B")
+                direction(source: CTY[i-1].placemark.coordinate, destination: CTY[i].placemark.coordinate, title: "B")
             } else if i == 2 {
-                showRoute(source: CTY[i-1].placemark.coordinate, destination: CTY[i].placemark.coordinate, title: "C")
+                direction(source: CTY[i-1].placemark.coordinate, destination: CTY[i].placemark.coordinate, title: "C")
             }
         }
     }
     
     func displayDistance() {
-        lblDistance.text = ""
-        var currentLat = locationManager.location?.coordinate.latitude
-        var currentLong = locationManager.location?.coordinate.longitude
+        kmtxt.text = ""
+        var latticur = LocationHandler.location?.coordinate.latitude
+        var longcur = LocationHandler.location?.coordinate.longitude
         
         var str = ""
         for i in 0..<CTY.count {
-            let dist = getDistance(source: locationManager.location!.coordinate, destination: CTY[i].placemark.coordinate) / 1000.0
+            let dist = getpath(source: LocationHandler.location!.coordinate, destination: CTY[i].placemark.coordinate) / 1000.0
             var strAn = ""
             if i == 0 {
                 strAn = "A"
@@ -88,7 +88,7 @@ class HomeScreenView: UIViewController  {
             } else if i == 2 {
                 strAn = "C"
             }
-            str += "Current location to \(strAn) : \(getDistanceFormatted(value: dist)) \n "
+            str += "Current location to \(strAn) : \(distfrmt(value: dist)) \n "
         }
         str += " \n "
         for i in 0..<CTY.count {
@@ -98,24 +98,24 @@ class HomeScreenView: UIViewController  {
                 var strAn = ""
                 if i == 1 {
                     strAn = "A to B"
-                    let dist = getDistance(source: CTY[i].placemark.coordinate, destination: CTY[i-1].placemark.coordinate) / 1000.0
-                    str += "\(strAn) : \(getDistanceFormatted(value: dist)) \n "
+                    let dist = getpath(source: CTY[i].placemark.coordinate, destination: CTY[i-1].placemark.coordinate) / 1000.0
+                    str += "\(strAn) : \(distfrmt(value: dist)) \n "
                 } else if i == 2 {
                     strAn = "B to C"
-                    let dist = getDistance(source: CTY[i].placemark.coordinate, destination: CTY[i-1].placemark.coordinate) / 1000.0
-                    str += "\(strAn) : \(getDistanceFormatted(value: dist)) \n "
+                    let dist = getpath(source: CTY[i].placemark.coordinate, destination: CTY[i-1].placemark.coordinate) / 1000.0
+                    str += "\(strAn) : \(distfrmt(value: dist)) \n "
                     
                     strAn = "C to A"
-                    let dist1 = getDistance(source: CTY[i].placemark.coordinate, destination: CTY[0].placemark.coordinate) / 1000.0
-                    str += "\(strAn) : \(getDistanceFormatted(value: dist1))"
+                    let dist1 = getpath(source: CTY[i].placemark.coordinate, destination: CTY[0].placemark.coordinate) / 1000.0
+                    str += "\(strAn) : \(distfrmt(value: dist1))"
                 }
             }
 //        }
         
-        lblDistance.text = str
+        kmtxt.text = str
     }
     
-    func showRoute(source : CLLocationCoordinate2D, destination : CLLocationCoordinate2D, title : String) {
+    func direction(source : CLLocationCoordinate2D, destination : CLLocationCoordinate2D, title : String) {
 //        let sourceLocation = CLLocationCoordinate2D(latitude:39.173209 , longitude: -94.593933)
 //        let destinationLocation = CLLocationCoordinate2D(latitude:38.643172 , longitude: -90.177429)
         
@@ -151,13 +151,13 @@ class HomeScreenView: UIViewController  {
         }
     }
     
-    func getDistanceFormatted(value : Double) -> String {
+    func distfrmt(value : Double) -> String {
         return String(format: "%.2f km", value)
     }
     
-    @objc func longPressed(sender: UILongPressGestureRecognizer) {
-        print("longpressed")
-        let alert = UIAlertController(title: "Lab Test 1-2", message: "Add city?", preferredStyle: .alert)
+    @objc func Taplong(sender: UILongPressGestureRecognizer) {
+        print("longtapped")
+        let alert = UIAlertController(title: "Pressed", message: "Add Place?", preferredStyle: .alert)
 
         alert.addAction(UIAlertAction(title: "Yes", style: .default, handler: { (action: UIAlertAction!) in
             let searchVC = self.storyboard?.instantiateViewController(withIdentifier: "CityAddView") as! CityAddView
@@ -181,7 +181,7 @@ class HomeScreenView: UIViewController  {
         }
         
         let polygon = MKPolygon(coordinates: points, count: points.count)
-        self.polygon = polygon
+        self.Circle = polygon
         MPView.addOverlay(polygon)
     }
     
@@ -198,7 +198,7 @@ class HomeScreenView: UIViewController  {
                     if polygon.contain(coor: locationCoordinate) {
 //                    if renderer.path.contains(viewPoint) {
                         print("With in range")
-                        checkPoint(location: locationCoordinate)
+                        mlstn(location: locationCoordinate)
                     } else {
                         print("out side of range")
                     }
@@ -209,18 +209,18 @@ class HomeScreenView: UIViewController  {
         super.touchesEnded(touches, with: event)
     }
     
-    func checkPoint(location : CLLocationCoordinate2D) {
-        var arrDistance : [Double] = []
+    func mlstn(location : CLLocationCoordinate2D) {
+        var distary : [Double] = []
         for i in 0..<CTY.count {
-            let dist = getDistance(source: location, destination: CTY[i].placemark.coordinate)
-            arrDistance.append(dist)
+            let dissst = getpath(source: location, destination: CTY[i].placemark.coordinate)
+            distary.append(dissst)
         }
-        let ss = arrDistance.max { a, b in
+        let ss = distary.max { a, b in
             return a > b
         }
         var index = 0
-        for i in 0..<arrDistance.count {
-            if ss == arrDistance[i] {
+        for i in 0..<distary.count {
+            if ss == distary[i] {
                 index = i
                 break
             }
@@ -232,13 +232,13 @@ class HomeScreenView: UIViewController  {
             MPView.removeOverlay(MPView.overlays.last!)
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.addAnnotations()
+            self.mrkr()
             self.checkRouteOption()
         }
         
     }
     
-    func getDistance(source : CLLocationCoordinate2D, destination : CLLocationCoordinate2D) ->  Double {
+    func getpath(source : CLLocationCoordinate2D, destination : CLLocationCoordinate2D) ->  Double {
         let coordinate₀ = CLLocation(latitude: source.latitude, longitude: source.longitude)
         let coordinate₁ = CLLocation(latitude: destination.latitude, longitude: destination.longitude)
 
@@ -246,7 +246,7 @@ class HomeScreenView: UIViewController  {
         return Double(distanceInMeters)
     }
     
-    func addAnnotations() {
+    func mrkr() {
         var annotations = [MKAnnotation]()
         for i in 0..<CTY.count {
             let annotation = MKPointAnnotation()
@@ -266,31 +266,20 @@ class HomeScreenView: UIViewController  {
         }
         displayDistance()
         MPView.addAnnotations(annotations)
-        MPView.fitAll(in: annotations, andShow: true)
+        MPView.zmft(in: annotations, andShow: true)
     }
 }
 
 extension HomeScreenView : CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last{
-            let center = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-            let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 2.0, longitudeDelta: 2.0))
-            self.MPView.setRegion(region, animated: true)
-            MPView.showsUserLocation = true
-        }
-    }
-}
-
-extension HomeScreenView : CLLocationManagerDelegate {
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last{
-            let center = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
-            let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 2.0, longitudeDelta: 2.0))
-            self.MPView.setRegion(region, animated: true)
-            MPView.showsUserLocation = true
-        }
-    }
     
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last{
+            let center = CLLocationCoordinate2D(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+            let region = MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 2.0, longitudeDelta: 2.0))
+            self.MPView.setRegion(region, animated: true)
+            MPView.showsUserLocation = true
+        }
+    }
     
 }
 
@@ -298,7 +287,7 @@ extension HomeScreenView : SearchCityResult {
     
     func searchedCity(item: MKMapItem) {
         CTY.append(item)
-        addAnnotations()
+        mrkr()
     }
     
 }
@@ -306,7 +295,7 @@ extension HomeScreenView : SearchCityResult {
 extension HomeScreenView : MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-        if polygon == nil {
+        if Circle == nil {
             let renderer = MKPolylineRenderer(overlay: overlay)
             if overlay.title == "A" {
                 renderer.strokeColor = UIColor.blue
@@ -318,7 +307,7 @@ extension HomeScreenView : MKMapViewDelegate {
             renderer.lineWidth = 4.0
             return renderer
         } else {
-            let renderer = MKPolygonRenderer(polygon: polygon!)
+            let renderer = MKPolygonRenderer(polygon: Circle!)
             renderer.fillColor = UIColor.red.withAlphaComponent(0.50)
             return renderer
         }
@@ -341,8 +330,8 @@ extension MKPolygon {
 
 extension MKMapView {
 
-    /// When we call this function, we have already added the annotations to the map, and just want all of them to be displayed.
-    func fitAll() {
+    
+    func zmft() {
         var zoomRect            = MKMapRect.null;
         for annotation in annotations {
             let annotationPoint = MKMapPoint(annotation.coordinate)
@@ -352,8 +341,8 @@ extension MKMapView {
         setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsets(top: 100, left: 100, bottom: 100, right: 100), animated: true)
     }
 
-    /// We call this function and give it the annotations we want added to the map. we display the annotations if necessary
-    func fitAll(in annotations: [MKAnnotation], andShow show: Bool) {
+    
+    func zmft(in annotations: [MKAnnotation], andShow show: Bool) {
         var zoomRect:MKMapRect  = MKMapRect.null
     
         for annotation in annotations {
