@@ -16,6 +16,9 @@
 		B643D89F283EBABF00AFE16C /* A1_A2_iOS_Dhairya_c081994Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B643D89E283EBABF00AFE16C /* A1_A2_iOS_Dhairya_c081994Tests.swift */; };
 		B643D8A9283EBABF00AFE16C /* A1_A2_iOS_Dhairya_c081994UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B643D8A8283EBABF00AFE16C /* A1_A2_iOS_Dhairya_c081994UITests.swift */; };
 		B643D8AB283EBABF00AFE16C /* A1_A2_iOS_Dhairya_c081994UITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B643D8AA283EBABF00AFE16C /* A1_A2_iOS_Dhairya_c081994UITestsLaunchTests.swift */; };
+		B643D8B8283EBB4B00AFE16C /* HomeScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B643D8B7283EBB4B00AFE16C /* HomeScreenView.swift */; };
+		B643D8BA283EBB6200AFE16C /* CityAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B643D8B9283EBB6200AFE16C /* CityAddView.swift */; };
+		B643D8BC283EBB8200AFE16C /* ResultCellTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B643D8BB283EBB8200AFE16C /* ResultCellTable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +52,9 @@
 		B643D8A4283EBABF00AFE16C /* A1_A2_iOS_Dhairya_c081994UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = A1_A2_iOS_Dhairya_c081994UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B643D8A8283EBABF00AFE16C /* A1_A2_iOS_Dhairya_c081994UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A1_A2_iOS_Dhairya_c081994UITests.swift; sourceTree = "<group>"; };
 		B643D8AA283EBABF00AFE16C /* A1_A2_iOS_Dhairya_c081994UITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A1_A2_iOS_Dhairya_c081994UITestsLaunchTests.swift; sourceTree = "<group>"; };
+		B643D8B7283EBB4B00AFE16C /* HomeScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenView.swift; sourceTree = "<group>"; };
+		B643D8B9283EBB6200AFE16C /* CityAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityAddView.swift; sourceTree = "<group>"; };
+		B643D8BB283EBB8200AFE16C /* ResultCellTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultCellTable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +112,9 @@
 				B643D890283EBABF00AFE16C /* Assets.xcassets */,
 				B643D892283EBABF00AFE16C /* LaunchScreen.storyboard */,
 				B643D895283EBABF00AFE16C /* Info.plist */,
+				B643D8B7283EBB4B00AFE16C /* HomeScreenView.swift */,
+				B643D8B9283EBB6200AFE16C /* CityAddView.swift */,
+				B643D8BB283EBB8200AFE16C /* ResultCellTable.swift */,
 			);
 			path = A1_A2_iOS_Dhairya_c081994;
 			sourceTree = "<group>";
@@ -261,6 +270,9 @@
 				B643D88C283EBABE00AFE16C /* ViewController.swift in Sources */,
 				B643D888283EBABE00AFE16C /* AppDelegate.swift in Sources */,
 				B643D88A283EBABE00AFE16C /* SceneDelegate.swift in Sources */,
+				B643D8BC283EBB8200AFE16C /* ResultCellTable.swift in Sources */,
+				B643D8B8283EBB4B00AFE16C /* HomeScreenView.swift in Sources */,
+				B643D8BA283EBB6200AFE16C /* CityAddView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
