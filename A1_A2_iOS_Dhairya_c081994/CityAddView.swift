@@ -8,8 +8,8 @@
 import UIKit
 import MapKit
 
-protocol SearchCityResult {
-    func searchedCity(item : MKMapItem)
+protocol CTRslt {
+    func ctSrch(item : MKMapItem)
 }
 
 class CityAddView: UIViewController {
@@ -23,7 +23,7 @@ class CityAddView: UIViewController {
     
     var Mitm:[MKMapItem] = []
     
-    var delegate : SearchCityResult?
+    var delegate : CTRslt?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,7 +62,7 @@ extension CityAddView : UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        delegate?.searchedCity(item: Mitm[indexPath.row])
+        delegate?.ctSrch(item: Mitm[indexPath.row])
         self.navigationController?.popViewController(animated: true)
     }
     

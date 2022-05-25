@@ -39,24 +39,14 @@ class HomeScreenView: UIViewController  {
         self.MPView.addGestureRecognizer(longPressRecognizer)
         
         
-        item.rightBarButtonItem = UIBarButtonItem(title: "Direction", style: .plain, target: self, action: #selector(addPhotosTapped))
+        item.rightBarButtonItem = UIBarButtonItem(title: "Direction", style: .plain, target: self, action: #selector(tappedaddplc))
         self.NaviBar.items = [item]
         
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        checkRouteOption()
-    }
     
-    func checkRouteOption() {
-        if CTY.count > 2 {
-            self.NaviBar.items = [item]
-        } else {
-            self.NaviBar.items?.removeAll()
-        }
-    }
     
-    @objc func addPhotosTapped() {
+    @objc func tappedaddplc() {
         if MPView.overlays.last != nil {
             self.MPView.removeOverlay(MPView.overlays.last!)
             Circle = nil
@@ -70,6 +60,29 @@ class HomeScreenView: UIViewController  {
                 direction(source: CTY[i-1].placemark.coordinate, destination: CTY[i].placemark.coordinate, title: "C")
             }
         }
+    }
+    
+    func mrkr() {
+        var annotations = [MKAnnotation]()
+        for i in 0..<CTY.count {
+            let annotation = MKPointAnnotation()
+            if i == 0 {
+                annotation.title = "A"
+            } else if i == 1 {
+                annotation.title = "B"
+            } else if i == 2 {
+                annotation.title = "C"
+                addcir()
+            } else {
+                annotation.title = ""
+            }
+            
+            annotation.coordinate = CLLocationCoordinate2D(latitude: CTY[i].placemark.coordinate.latitude, longitude: CTY[i].placemark.coordinate.longitude)
+            annotations.append(annotation)
+        }
+        displayDistance()
+        MPView.addAnnotations(annotations)
+        MPView.zmft(in: annotations, andShow: true)
     }
     
     func displayDistance() {
@@ -92,9 +105,7 @@ class HomeScreenView: UIViewController  {
         }
         str += " \n "
         for i in 0..<CTY.count {
-//            if i == arrCity.count - 1 {
-//
-//            } else {
+
                 var strAn = ""
                 if i == 1 {
                     strAn = "A to B"
@@ -110,45 +121,67 @@ class HomeScreenView: UIViewController  {
                     str += "\(strAn) : \(distfrmt(value: dist1))"
                 }
             }
-//        }
-        
+
         kmtxt.text = str
     }
     
-    func direction(source : CLLocationCoordinate2D, destination : CLLocationCoordinate2D, title : String) {
-//        let sourceLocation = CLLocationCoordinate2D(latitude:39.173209 , longitude: -94.593933)
-//        let destinationLocation = CLLocationCoordinate2D(latitude:38.643172 , longitude: -90.177429)
-        
-        let sourceLocation = source
-        let destinationLocation = destination
-        
-        let sourcePlaceMark = MKPlacemark(coordinate: sourceLocation)
-        let destinationPlaceMark = MKPlacemark(coordinate: destinationLocation)
-        
-        let directionRequest = MKDirections.Request()
-        directionRequest.source = MKMapItem(placemark: sourcePlaceMark)
-        directionRequest.destination = MKMapItem(placemark: destinationPlaceMark)
-        directionRequest.transportType = .automobile
-        
-        let directions = MKDirections(request: directionRequest)
-        directions.calculate { (response, error) in
-            guard let directionResonse = response else {
-                if let error = error {
-                    print("we have error getting directions==\(error.localizedDescription)")
-                }
-                return
-            }
-            
-            //get route and assign to our route variable
-            let route = directionResonse.routes[0]
-            route.polyline.title = title
-            //add rout to our mapview
-            self.MPView.addOverlay(route.polyline, level: .aboveRoads)
-            
-            //setting rect of our mapview to fit the two locations
-            let rect = route.polyline.boundingMapRect
-            self.MPView.setRegion(MKCoordinateRegion(rect), animated: true)
+    override func viewWillAppear(_ animated: Bool) {
+        dirsugg()
+    }
+    
+    func dirsugg() {
+        if CTY.count > 2 {
+            self.NaviBar.items = [item]
+        } else {
+            self.NaviBar.items?.removeAll()
         }
+    }
+    
+   
+    
+    
+    
+    func addcir() {
+        var points: [CLLocationCoordinate2D] = [CLLocationCoordinate2D]()
+        
+        for i in 0..<CTY.count {
+            points.append(CTY[i].placemark.coordinate)
+        }
+        
+        let polygon = MKPolygon(coordinates: points, count: points.count)
+        self.Circle = polygon
+        MPView.addOverlay(polygon)
+    }
+    
+   
+    
+    func mlstn(location : CLLocationCoordinate2D) {
+        var distary : [Double] = []
+        for i in 0..<CTY.count {
+            let dissst = getpath(source: location, destination: CTY[i].placemark.coordinate)
+            distary.append(dissst)
+        }
+        let ss = distary.max { a, b in
+            return a > b
+        }
+        var index = 0
+        for i in 0..<distary.count {
+            if ss == distary[i] {
+                index = i
+                break
+            }
+        }
+        CTY.remove(at: index)
+
+        MPView.removeAnnotations(MPView.annotations)
+        if MPView.overlays.last != nil {
+            MPView.removeOverlay(MPView.overlays.last!)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.mrkr()
+            self.dirsugg()
+        }
+        
     }
     
     func distfrmt(value : Double) -> String {
@@ -173,16 +206,49 @@ class HomeScreenView: UIViewController  {
         present(alert, animated: true, completion: nil)
     }
     
-    func addPolygon() {
-        var points: [CLLocationCoordinate2D] = [CLLocationCoordinate2D]()
+    func getpath(source : CLLocationCoordinate2D, destination : CLLocationCoordinate2D) ->  Double {
+        let coordinate₀ = CLLocation(latitude: source.latitude, longitude: source.longitude)
+        let coordinate₁ = CLLocation(latitude: destination.latitude, longitude: destination.longitude)
+
+        let distanceInMeters = coordinate₀.distance(from: coordinate₁)
+        return Double(distanceInMeters)
+    }
+    
+    
+    
+    func direction(source : CLLocationCoordinate2D, destination : CLLocationCoordinate2D, title : String) {
+
         
-        for i in 0..<CTY.count {
-            points.append(CTY[i].placemark.coordinate)
+        let strtloc = source
+        let endloc = destination
+        
+        let strtmrkr = MKPlacemark(coordinate: strtloc)
+        let endmrkr = MKPlacemark(coordinate: endloc)
+        
+        let direxs = MKDirections.Request()
+        direxs.source = MKMapItem(placemark: strtmrkr)
+        direxs.destination = MKMapItem(placemark: endmrkr)
+        direxs.transportType = .automobile
+        
+        let dir = MKDirections(request: direxs)
+        dir.calculate { (response, error) in
+            guard let dirrespo = response else {
+                if let error = error {
+                    print("we have error getting directions==\(error.localizedDescription)")
+                }
+                return
+            }
+            
+            //get route and assign to our route variable
+            let path = dirrespo.routes[0]
+            path.polyline.title = title
+            //add rout to our mapview
+            self.MPView.addOverlay(path.polyline, level: .aboveRoads)
+            
+            //setting rect of our mapview to fit the two locations
+            let rect = path.polyline.boundingMapRect
+            self.MPView.setRegion(MKCoordinateRegion(rect), animated: true)
         }
-        
-        let polygon = MKPolygon(coordinates: points, count: points.count)
-        self.Circle = polygon
-        MPView.addOverlay(polygon)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -195,8 +261,8 @@ class HomeScreenView: UIViewController  {
                     let renderer = MKPolygonRenderer(polygon: polygon)
                     let mapPoint = MKMapPoint(locationCoordinate)
                     let viewPoint = renderer.point(for: mapPoint)
-                    if polygon.contain(coor: locationCoordinate) {
-//                    if renderer.path.contains(viewPoint) {
+                    if polygon.hlt(coor: locationCoordinate) {
+
                         print("With in range")
                         mlstn(location: locationCoordinate)
                     } else {
@@ -207,66 +273,6 @@ class HomeScreenView: UIViewController  {
         }
         
         super.touchesEnded(touches, with: event)
-    }
-    
-    func mlstn(location : CLLocationCoordinate2D) {
-        var distary : [Double] = []
-        for i in 0..<CTY.count {
-            let dissst = getpath(source: location, destination: CTY[i].placemark.coordinate)
-            distary.append(dissst)
-        }
-        let ss = distary.max { a, b in
-            return a > b
-        }
-        var index = 0
-        for i in 0..<distary.count {
-            if ss == distary[i] {
-                index = i
-                break
-            }
-        }
-        CTY.remove(at: index)
-//        mapView.removeAnnotation(annotations[index])
-        MPView.removeAnnotations(MPView.annotations)
-        if MPView.overlays.last != nil {
-            MPView.removeOverlay(MPView.overlays.last!)
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.mrkr()
-            self.checkRouteOption()
-        }
-        
-    }
-    
-    func getpath(source : CLLocationCoordinate2D, destination : CLLocationCoordinate2D) ->  Double {
-        let coordinate₀ = CLLocation(latitude: source.latitude, longitude: source.longitude)
-        let coordinate₁ = CLLocation(latitude: destination.latitude, longitude: destination.longitude)
-
-        let distanceInMeters = coordinate₀.distance(from: coordinate₁)
-        return Double(distanceInMeters)
-    }
-    
-    func mrkr() {
-        var annotations = [MKAnnotation]()
-        for i in 0..<CTY.count {
-            let annotation = MKPointAnnotation()
-            if i == 0 {
-                annotation.title = "A"
-            } else if i == 1 {
-                annotation.title = "B"
-            } else if i == 2 {
-                annotation.title = "C"
-                addPolygon()
-            } else {
-                annotation.title = ""
-            }
-            
-            annotation.coordinate = CLLocationCoordinate2D(latitude: CTY[i].placemark.coordinate.latitude, longitude: CTY[i].placemark.coordinate.longitude)
-            annotations.append(annotation)
-        }
-        displayDistance()
-        MPView.addAnnotations(annotations)
-        MPView.zmft(in: annotations, andShow: true)
     }
 }
 
@@ -283,9 +289,9 @@ extension HomeScreenView : CLLocationManagerDelegate {
     
 }
 
-extension HomeScreenView : SearchCityResult {
+extension HomeScreenView : CTRslt {
     
-    func searchedCity(item: MKMapItem) {
+    func ctSrch(item: MKMapItem) {
         CTY.append(item)
         mrkr()
     }
@@ -316,14 +322,14 @@ extension HomeScreenView : MKMapViewDelegate {
 
 
 extension MKPolygon {
-    func contain(coor: CLLocationCoordinate2D) -> Bool {
-        let polygonRenderer = MKPolygonRenderer(polygon: self)
-        let currentMapPoint: MKMapPoint = MKMapPoint(coor)
-        let polygonViewPoint: CGPoint = polygonRenderer.point(for: currentMapPoint)
-        if polygonRenderer.path == nil {
+    func hlt(coor: CLLocationCoordinate2D) -> Bool {
+        let cirrnd = MKPolygonRenderer(polygon: self)
+        let curpos: MKMapPoint = MKMapPoint(coor)
+        let cirvp: CGPoint = cirrnd.point(for: curpos)
+        if cirrnd.path == nil {
           return false
         }else{
-          return polygonRenderer.path.contains(polygonViewPoint)
+          return cirrnd.path.contains(cirvp)
         }
     }
 }
@@ -332,33 +338,33 @@ extension MKMapView {
 
     
     func zmft() {
-        var zoomRect            = MKMapRect.null;
+        var zmrct            = MKMapRect.null;
         for annotation in annotations {
             let annotationPoint = MKMapPoint(annotation.coordinate)
-            let pointRect       = MKMapRect(x: annotationPoint.x, y: annotationPoint.y, width: 0.01, height: 0.01);
-            zoomRect            = zoomRect.union(pointRect);
+            let ptrect       = MKMapRect(x: annotationPoint.x, y: annotationPoint.y, width: 0.01, height: 0.01);
+            zmrct            = zmrct.union(ptrect);
         }
-        setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsets(top: 100, left: 100, bottom: 100, right: 100), animated: true)
+        setVisibleMapRect(zmrct, edgePadding: UIEdgeInsets(top: 100, left: 100, bottom: 100, right: 100), animated: true)
     }
 
     
     func zmft(in annotations: [MKAnnotation], andShow show: Bool) {
-        var zoomRect:MKMapRect  = MKMapRect.null
+        var zmrect:MKMapRect  = MKMapRect.null
     
         for annotation in annotations {
-            let aPoint          = MKMapPoint(annotation.coordinate)
-            let rect            = MKMapRect(x: aPoint.x, y: aPoint.y, width: 0.1, height: 0.1)
+            let pta          = MKMapPoint(annotation.coordinate)
+            let rct            = MKMapRect(x: pta.x, y: pta.y, width: 0.1, height: 0.1)
         
-            if zoomRect.isNull {
-                zoomRect = rect
+            if zmrect.isNull {
+                zmrect = rct
             } else {
-                zoomRect = zoomRect.union(rect)
+                zmrect = zmrect.union(rct)
             }
         }
         if(show) {
             addAnnotations(annotations)
         }
-        setVisibleMapRect(zoomRect, edgePadding: UIEdgeInsets(top: 100, left: 100, bottom: 100, right: 100), animated: true)
+        setVisibleMapRect(zmrect, edgePadding: UIEdgeInsets(top: 100, left: 100, bottom: 100, right: 100), animated: true)
     }
 
 }
