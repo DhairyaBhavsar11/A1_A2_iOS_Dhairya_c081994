@@ -16,15 +16,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4uX-s8-nMd">
-                                <rect key="frame" x="20" y="803" width="374" height="59"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="59" id="jEs-TY-E7Z"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" systemColor="systemPinkColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="CeT-gt-O75">
                                 <rect key="frame" x="0.0" y="117" width="414" height="642"/>
                             </mapView>
@@ -34,6 +25,15 @@
                                     <navigationItem title="MAP" id="n7W-mc-r9G"/>
                                 </items>
                             </navigationBar>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4uX-s8-nMd">
+                                <rect key="frame" x="20" y="767" width="374" height="95"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="95" id="jEs-TY-E7Z"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <color key="textColor" systemColor="systemPinkColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="KDc-e6-Fih"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -43,7 +43,7 @@
                             <constraint firstItem="vuW-ig-MzQ" firstAttribute="top" secondItem="rSy-x2-hzW" secondAttribute="topMargin" constant="-29" id="85R-j0-M1v"/>
                             <constraint firstItem="CeT-gt-O75" firstAttribute="leading" secondItem="KDc-e6-Fih" secondAttribute="leading" id="9dN-O4-fdd"/>
                             <constraint firstItem="vuW-ig-MzQ" firstAttribute="leading" secondItem="CeT-gt-O75" secondAttribute="leading" id="ByP-1y-nyY"/>
-                            <constraint firstItem="4uX-s8-nMd" firstAttribute="top" secondItem="CeT-gt-O75" secondAttribute="bottom" constant="44" id="CzR-Zd-wy1"/>
+                            <constraint firstItem="4uX-s8-nMd" firstAttribute="top" secondItem="CeT-gt-O75" secondAttribute="bottom" constant="8" id="CzR-Zd-wy1"/>
                             <constraint firstItem="vuW-ig-MzQ" firstAttribute="trailing" secondItem="CeT-gt-O75" secondAttribute="trailing" id="TN8-Z4-9DU"/>
                             <constraint firstItem="CeT-gt-O75" firstAttribute="top" secondItem="vuW-ig-MzQ" secondAttribute="bottom" constant="14" id="VYb-Jl-LZW"/>
                             <constraint firstItem="4uX-s8-nMd" firstAttribute="bottom" secondItem="KDc-e6-Fih" secondAttribute="bottom" id="itB-E6-0XK"/>
